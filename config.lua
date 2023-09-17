@@ -36,6 +36,14 @@ Config.InteriorZones = {
             scale = {x = 0.8, y = 0.8, z = 0.8},
         },
     },
+    manage = {
+        marker = {
+            type = 25,
+            offsetZ = -0.95,
+            color = {r = 82, g = 145, b = 170, a = 155},
+            scale = {x = 0.8, y = 0.8, z = 0.8},
+        },
+    },
 }
 
 Config.Properties = {

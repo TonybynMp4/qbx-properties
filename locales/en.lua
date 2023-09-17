@@ -23,13 +23,18 @@ local Translations = {
         buy = 'Buy',
         rent = 'Rent',
         promptOfferHeader = 'Property Offer',
-        promptOffer = 'Do you want to %{action} this property for $%{amount}?'
+        promptOffer = 'Do you want to %{action} this property for $%{amount}?',
+        owner = "Owner",
+        co_owner = "Co-owner",
+        tenant = "Tenant",
+        remove = "Remove"
     },
     interiorZones = {
         leave = '[~g~E~w~] - Leave',
         stash = '[~g~E~w~] - Stash',
         wardrobe = '[~g~E~w~]- Wardrobe',
         logout = '[~g~E~w~] - Logout',
+        manage = '[~g~E~w~] - Manage',
     },
     selection = {
         action = "%{action} Property",
@@ -76,6 +81,15 @@ local Translations = {
         done = 'Done',
     },
     manage_property_menu = {
+        name = 'Property Name: %{name}',
+        roles = 'Manage player roles',
+        customcoords = 'Customize Coordinates',
+        decorate = 'Decorate',
+        vehicles = 'Manage Vehicles',
+        manage_roles = {
+            add = 'Add',
+            title = 'Manage Roles',
+        }
     },
 }
 

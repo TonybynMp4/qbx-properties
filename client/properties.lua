@@ -292,7 +292,7 @@ local function modifyProperty(propertyData)
         if args.action == 'done' then
             point:remove()
             if not next(newData) then return end
-            TriggerServerEvent('qbx-properties:server:modifyProperty', propertyData.id, newData)
+            TriggerServerEvent('qbx-properties:server:modifyProperty', propertyData.id, propertyData.property_type, newData)
         else
             lib.showMenu('modify_property_menu')
         end
@@ -489,6 +489,115 @@ local function populatePropertiesMenu(ids, propertyType, coords)
         populatePropertyMenu(args.propertyData, args.propertyType)
         lib.showMenu('property_menu')
     end)
+end
+
+local function populateRolesMenu(propertyId, propertyData)
+    local options = {}
+    local roles = propertyData.owners
+    local playerNames = lib.callback.await('qbx-properties:server:GetPlayerNames', false, roles)
+
+    if not playerNames then return false end
+
+    for citizenid, role in pairs(roles) do
+        options[#options+1] = {
+            label = playerNames[citizenid],
+            icon = 'user',
+            values = {Lang:t('general.owner'), Lang:t('general.co_owner'), Lang:t("general.tenant"), Lang:t('general.remove')},
+            defaultindex = role == "owner" and 1 or role == "co_owner" and 2 or 3,
+            args = {
+                action = 'role',
+                citizenid = citizenid,
+                propertyId = propertyId,
+            },
+            close = true
+        }
+    end
+
+    options[#options+1] = {
+        label = Lang:t('manage_property_menu.manage_roles.add'),
+        icon = 'plus',
+        args = {
+            action = 'add',
+            propertyId = propertyId,
+        },
+        close = true
+    }
+
+    lib.registerMenu({
+        id = 'propertyRoles_menu',
+        title = Lang:t('manage_property_menu.manage_roles.title'),
+        position = 'top-left',
+        options = options
+    }, function(_, scrollIndex, args)
+        if args.action == "role" then
+            local newRole = scrollIndex == 1 and "owner" or scrollIndex == 2 and "co_owner" or scrollIndex == 3 and "tenant" or "remove"
+            TriggerServerEvent('qbx-properties:server:modifyRole', args.propertyId, args.citizenid, newRole)
+        elseif args.action == "add" then
+            local players = lib.getNearbyPlayers(GetEntityCoords(cache.ped), 10, Config.Properties.realtorsBuyThemselves or false)
+            if not players then
+                QBCore.Functions.Notify(Lang:t('error.players_nearby'), 'error', 7500)
+                return
+            end
+
+            selectPlayer(players, "Add", function(player)
+                TriggerServerEvent('qbx-properties:server:addTenant', args.propertyId, GetPlayerServerId(player.id))
+            end)
+        end
+    end)
+    return true
+end
+
+local function openManageMenu(propertyId)
+    local propertyData = lib.callback.await('qbx-properties:server:GetPropertyData', false, propertyId)
+    local Role = propertyData.owners[PlayerData.citizenid]
+    if not Role then return end
+    local options = {
+        {label = Lang:t('manage_property_menu.name', {name = propertyData.name}), args = { action = "name" }, close = true},
+        {label = Lang:t('manage_property_menu.roles'), args = { action = "roles" }, close = true},
+        {label = Lang:t('manage_property_menu.customcoords'), args = { action = "customcoords" }, close = true},
+    }
+
+    if propertyData.property_type ~= 'garage' then
+        options[#options+1] = {label = Lang:t('manage_property_menu.decorate'), args = { action = "decorate" }, close = true}
+    else
+        options[#options+1] = {label = Lang:t('manage_property_menu.vehicles'), args = { action = "vehicles" }, close = true}
+    end
+
+    lib.registerMenu({
+        id = 'manageProperty_menu',
+        title = propertyData.name,
+        position = 'top-left',
+        options = options,
+    }, function(_, _, args)
+        if args.action == "name" then
+            local propertyString = string.split(propertyData.name, ' ')
+            local propertyNumber = tonumber(propertyString[1])
+            local input = lib.inputDialog(Lang:t('manage_property_menu.title'), {
+                {type = 'input', label = Lang:t('manage_property_menu.name', {name = propertyData.name}), default = table.concat(propertyString, ' ', 2), required = true},
+            }, {allowCancel = true})
+
+            if input then
+                TriggerServerEvent('qbx-properties:server:modifyProperty', propertyId, propertyData.property_type, {name = propertyNumber .. " " .. input[1]})
+            end
+        elseif args.action == "roles" then
+            if Role ~= "owner" and Role ~= "co_owner" then
+                return QBCore.Functions.Notify(Lang:t('error.not_owner'), 'error', 7500)
+            end
+            if populateRolesMenu(propertyId, propertyData) then
+                lib.showMenu('propertyRoles_menu')
+            end
+        elseif args.action == "customcoords" then
+            if Role ~= "owner" and Role ~= "co_owner" then
+                return QBCore.Functions.Notify(Lang:t('error.not_owner'), 'error', 7500)
+            end
+        elseif args.action == "decorate" then
+            if Role ~= "owner" then
+                return QBCore.Functions.Notify(Lang:t('error.not_owner'), 'error', 7500)
+            end
+        elseif args.action == "vehicles" then
+        end
+    end)
+    lib.showMenu('manageProperty_menu')
 end
 
 local function addPropertyGroupBlip(propertyId, propertyGroup, isRented)
@@ -740,7 +849,6 @@ RegisterNetEvent('qbx-properties:client:enterIplProperty', function(interior, pr
 end)
 
 RegisterNetEvent('qbx-properties:client:enterGarage', function(interior, propertyId, isVisit, propertyOptions)
-    print(interior)
     local coords = Config.GarageIPLs[interior].coords
     DoScreenFadeOut(1500)
     Wait(250)
@@ -779,6 +887,8 @@ RegisterNetEvent("qbx-properties:client:leaveGarage", function(coords)
     SetEntityHeading(cache.ped, coords.w)
     DoScreenFadeIn(500)
 end)
+
+RegisterNetEvent('qbx-properties:client:openManageMenu', openManageMenu)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     setupInteriors()

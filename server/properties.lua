@@ -306,17 +306,25 @@ local function hasMoney(player, amount)
     return false
 end
 
+--- Removes the role of a player for a property
+--- @param citizenId string | integer
+--- @param propertyId integer
+--- @return boolean
+local function removeRole(citizenId, propertyId)
+    if not citizenId or not propertyId then return false end
+    local result = MySQL.Async.execute.await('DELETE FROM property_owners WHERE property_id = ? AND citizenid = ?', { propertyId, citizenId })
+    return result and true or false
+end
+
 --- Sets the role of a player for a property
---- @param playerId integer
+--- @param citizenId string | integer
 --- @param propertyId integer
 --- @param role string
 --- @return boolean
-local function setRole(playerId, propertyId, role)
-    if not playerId or not role or not propertyId then return false end
-    local player = QBCore.Functions.GetPlayer(playerId)
-    if not player then return false end
-    local result = MySQL.insert.await('INSERT INTO property_owners (`property_id`, `citizenid`, `role`) VALUES (?, ?, ?)', {
-        propertyId, player.PlayerData.citizenid, role
+local function setRole(citizenId, propertyId, role)
+    if not citizenId or not role or not propertyId then return false end
+    local result = MySQL.Async.execute.await('INSERT INTO property_owners (`property_id`, `citizenid`, `role`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `role` = ?', {
+        propertyId, citizenId, role, role
     })
     return result and true or false
 end
@@ -340,6 +348,39 @@ local function buyProperty(propertyId, playerId, price)
     properties[propertyId].owners[player.PlayerData.citizenid] = 'owner'
     return true
 end
+
+RegisterNetEvent('qbx-properties:server:modifyRole', function(propertyId, citizenid, newRole)
+    local source = source
+    if not propertyId or not citizenid or not newRole then return end
+    local player = QBCore.Functions.GetPlayer(source)
+    local PlayerData = player.PlayerData
+    local playerRole = properties[propertyId].owners[PlayerData.citizenid]
+    if playerRole ~= 'owner' and playerRole ~= "co_owner" then return end
+
+    if newRole == 'remove' then
+        if not removeRole(citizenid, propertyId) then QBCore.Functions.Notify(source, Lang:t('error.problem'), 'error') return end
+        properties[propertyId].owners[citizenid] = nil
+        TriggerClientEvent('qbx-properties:client:refreshProperties', -1)
+        return
+    else
+        if not setRole(citizenid, propertyId, newRole) then QBCore.Functions.Notify(source, Lang:t('error.problem'), 'error') return end
+        properties[propertyId].owners[citizenid] = newRole
+        TriggerClientEvent('qbx-properties:client:refreshProperties', -1)
+        return
+    end
+end)
+
+RegisterNetEvent('qbx-properties:server:addTenant', function(propertyId, playerId)
+    local source = source
+    local player = QBCore.Functions.GetPlayer(source)
+    local PlayerData = player.PlayerData
+    local playerRole = properties[propertyId].owners[PlayerData.citizenid]
+    if playerRole ~= 'owner' and playerRole ~= "co_owner" then return end
+
+    local targetPlayer = QBCore.Functions.GetPlayer(playerId)
+    if not targetPlayer then return end
+    setRole(targetPlayer.PlayerData.citizenid, propertyId, "tenant")
+end)
 
 RegisterNetEvent('qbx-properties:server:sellProperty', function(targetId, propertyId, comission)
     local source = source
@@ -455,7 +496,7 @@ end)
 
 --- Modifies the property's data in the database
 ---@param propertyId integer
-local function modifyProperty(propertyId)
+local function modifyProperty(propertyId, propertyType)
     if not propertyId then return end
     local propertyData = properties[propertyId]
     local affectedRows = MySQL.update.await('UPDATE properties SET name = @name, interior = @interior, price = @price, rent = @rent, coords = @coords, appliedtaxes = @appliedtaxes, maxweight = @maxweight, slots = @slots, options = @options WHERE id = @propertyId', {
@@ -472,18 +513,40 @@ local function modifyProperty(propertyId)
     })
     if not affectedRows then return end
     RefreshProperties()
-    exports.ox_inventory:RegisterStash("property_"..propertyId, "property_"..propertyId, propertyData.slots, propertyData.maxweight, false, false, Config.IPLS[propertyData.interior].coords.stash.xyz)
+    if propertyType == 'garage' then return end
+    local interiors = propertyType == 'ipl' and Config.IPLS[propertyData.interior] or Config.Shells[propertyData.interior]
+    exports.ox_inventory:RegisterStash("property_"..propertyId, "property_"..propertyId, propertyData.slots, propertyData.maxweight, false, false, propertyData?.stash or interiors.coords.stash.xyz)
 end
 
 --- Modifies the property's data
 ---@param propertyId integer
 ---@param newData table
-RegisterNetEvent('qbx-properties:server:modifyProperty', function(propertyId, newData)
+RegisterNetEvent('qbx-properties:server:modifyProperty', function(propertyId, propertyType, newData)
     if not propertyId or not newData then return end
     for k, v in pairs(newData) do
         properties[propertyId][k] = v
     end
-    modifyProperty(propertyId)
+    modifyProperty(propertyId, propertyType)
+end)
+
+lib.callback.register("qbx-properties:server:GetPlayerNames", function(_, roles)
+    local names = {}
+    local keys = {}
+
+    for k, v in pairs(roles) do
+        keys[#keys + 1] = k
+    end
+    local listString = '\''..table.concat(keys, '\',\'')..'\''
+    local result = MySQL.Sync.fetchAll('SELECT citizenid, charinfo FROM players WHERE citizenid IN ('..listString..')')
+    if result then
+        for _, v in pairs(result) do
+            local charinfo = json.decode(v.charinfo)
+            names[v.citizenid] = charinfo.firstname .. ' ' .. charinfo.lastname
+        end
+    else
+        return false
+    end
+    return names
 end)
 
 lib.callback.register('qbx-properties:server:GetOwnedOrRentedProperties', function(source)
