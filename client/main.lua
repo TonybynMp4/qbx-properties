@@ -7,7 +7,7 @@ InteriorZones = {}
 ---@param propertyId number | nil
 ---@param isVisit boolean
 function CreatePropertyInteriorZones(coords, propertyId, isVisit)
-    if next(InteriorZones) then
+    if table.type(InteriorZones) ~= 'empty' then
         for _, v in pairs(InteriorZones) do
             v:remove()
         end
@@ -38,7 +38,7 @@ function CreatePropertyInteriorZones(coords, propertyId, isVisit)
             AddTextComponentString(Lang:t('interiorZones.leave'))
             DisplayHelpTextFromStringLabel(0, false, true, 20000)
             if IsControlJustPressed(0, 38) then
-                TriggerServerEvent('qbx-properties:server:leaveProperty', propertyId, cache.vehicle or false)
+                TriggerServerEvent('qbx-properties:server:leaveProperty', propertyId, cache.vehicle)
             end
         end
     end
@@ -202,7 +202,7 @@ end
 
 --- Remove blips
 function RemoveBlips()
-    if not next(blips) then return end
+    if table.type(blips) == 'empty' then return end
     for _, blip in pairs(blips) do
         RemoveBlip(blip)
     end
@@ -216,8 +216,8 @@ local function concealPlayers(players, conceal)
     if GetInvokingResource() ~= nil then return end
     if not players then return end
 
-    for _, player in ipairs(players) do
-        NetworkConcealPlayer(player, conceal, false)
+    for i = 1, #players do
+        NetworkConcealPlayer(players[i], conceal, false)
     end
 end
 
@@ -225,8 +225,8 @@ local function concealVehicles(netids, conceal)
     if GetInvokingResource() ~= nil then return end
     if not netids then return end
 
-    for _, netid in ipairs(netids) do
-        local entity = NetToVeh(netid)
+    for i = 1, #netids do
+        local entity = NetToVeh(netids[i])
         NetworkConcealEntity(entity, conceal)
     end
 end
