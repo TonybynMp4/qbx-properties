@@ -97,11 +97,13 @@ end
 ---@return table
 local function formatPropertyData(PropertyData, owners)
     local coords = type(PropertyData.coords) == "string" and json.decode(PropertyData.coords) or PropertyData.coords
-    local stash, logout, outfit = nil, nil, nil
+    local stash, logout, outfit, manage = nil, nil, nil, nil
     if PropertyData.data then
-        stash = type(PropertyData.data.stash) == "string" and json.decode(PropertyData.data.stash) or PropertyData.data.stash
-        logout = type(PropertyData.data.logout) == "string" and json.decode(PropertyData.data.logout) or PropertyData.data.logout
-        outfit = type(PropertyData.data.outfit) == "string" and json.decode(PropertyData.data.outfit) or PropertyData.data.outfit
+        local dataCoords = json.decode(PropertyData.data)
+        stash = dataCoords.stash and vec3(dataCoords.stash.x, dataCoords.stash.y, dataCoords.stash.z)
+        logout = dataCoords.logout and vec3(dataCoords.logout.x, dataCoords.logout.y, dataCoords.logout.z)
+        outfit = dataCoords.outfit and vec3(dataCoords.outfit.x, dataCoords.outfit.y, dataCoords.outfit.z)
+        manage = dataCoords.manage and vec3(dataCoords.manage.x, dataCoords.manage.y, dataCoords.manage.z)
     end
 
     return {
@@ -114,6 +116,7 @@ local function formatPropertyData(PropertyData, owners)
         stash = stash,
         logout = logout,
         outfit = outfit,
+        manage = manage,
         appliedtaxes = type(PropertyData.appliedtaxes) ~= "table" and json.decode(PropertyData.appliedtaxes) or PropertyData.appliedtaxes or {},
         price = PropertyData.price,
         rent = PropertyData.rent,
@@ -499,7 +502,14 @@ end)
 local function modifyProperty(propertyId, propertyType)
     if not propertyId then return end
     local propertyData = properties[propertyId]
-    local affectedRows = MySQL.update.await('UPDATE properties SET name = @name, interior = @interior, price = @price, rent = @rent, coords = @coords, appliedtaxes = @appliedtaxes, maxweight = @maxweight, slots = @slots, options = @options WHERE id = @propertyId', {
+    local data = {
+        stash = propertyData.stash,
+        logout = propertyData.logout,
+        outfit = propertyData.outfit,
+        manage = propertyData.manage
+    }
+
+    local affectedRows = MySQL.update.await('UPDATE properties SET name = @name, interior = @interior, price = @price, rent = @rent, coords = @coords, appliedtaxes = @appliedtaxes, maxweight = @maxweight, slots = @slots, options = @options, data = @data WHERE id = @propertyId', {
         ['@name'] = propertyData.name,
         ['@interior'] = propertyData.interior,
         ['@coords'] = json.encode(propertyData.coords),
@@ -509,13 +519,18 @@ local function modifyProperty(propertyId, propertyType)
         ['@maxweight'] = propertyData.maxweight or 10000,
         ['@slots'] = propertyData.slots or 10,
         ['@options'] = json.encode(propertyData.options or {}),
+        ['@data'] = json.encode(data) or nil,
         ['@propertyId'] = propertyId
     })
     if not affectedRows then return end
     RefreshProperties()
+    local interiorCoords = propertyType == 'garage' and Config.GarageIPLs[propertyData.interior].coords or propertyType == 'ipl' and Config.IPLS[propertyData.interior].coords or Config.Shells[propertyData.interior].coords
+    for i = 1, #properties[propertyId].playersInside do
+        TriggerClientEvent('qbx-properties:client:refreshInteriorZones', properties[propertyId].playersInside[i], propertyId, interiorCoords)
+    end
+
     if propertyType == 'garage' then return end
-    local interiors = propertyType == 'ipl' and Config.IPLS[propertyData.interior] or Config.Shells[propertyData.interior]
-    exports.ox_inventory:RegisterStash("property_"..propertyId, "property_"..propertyId, propertyData.slots, propertyData.maxweight, false, false, propertyData?.stash or interiors.coords.stash.xyz)
+    exports.ox_inventory:RegisterStash("property_"..propertyId, "property_"..propertyId, propertyData.slots, propertyData.maxweight, false, false, propertyData?.stash?.xyz or interiorCoords.stash.xyz)
 end
 
 --- Modifies the property's data
@@ -523,8 +538,14 @@ end
 ---@param newData table
 RegisterNetEvent('qbx-properties:server:modifyProperty', function(propertyId, propertyType, newData)
     if not propertyId or not newData then return end
+    if newData.interiorCoords then
+        for k, v in pairs(newData.interiorCoords) do
+            newData[k] = v
+        end
+        newData.interiorCoords = nil
+    end
     for k, v in pairs(newData) do
-        properties[propertyId][k] = v
+        properties[propertyId][k] = (v ~= "reset" and v) or nil
     end
     modifyProperty(propertyId, propertyType)
 end)
@@ -580,6 +601,7 @@ lib.callback.register('qbx-properties:server:GetCustomZones', function(_, proper
         wardrobe = property.stash,
         stash = property.stash,
         logout = property.logout,
+        manage = property.manage
     }
     return zones or {}
 end)

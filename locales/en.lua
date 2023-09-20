@@ -27,7 +27,8 @@ local Translations = {
         owner = "Owner",
         co_owner = "Co-owner",
         tenant = "Tenant",
-        remove = "Remove"
+        remove = "Remove",
+        areYouSure = "Are you sure?",
     },
     interiorZones = {
         leave = '[~g~E~w~] - Leave',
@@ -89,7 +90,18 @@ local Translations = {
         manage_roles = {
             add = 'Add',
             title = 'Manage Roles',
-        }
+        },
+        manage_coords = {
+            title = 'Customize Coordinates',
+            stash = 'Stash',
+            wardrobe = 'Wardrobe',
+            logout = 'Logout',
+            manage = 'Manage',
+            save = 'Save',
+            set = 'Set',
+            reset = 'Reset',
+            willBeReset = 'This will be reset'
+        },
     },
 }
 

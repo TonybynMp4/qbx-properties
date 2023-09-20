@@ -114,72 +114,73 @@ Config.defaultapartment = 1
 Config.apartmentlocations = {
     {
         name = "Alta Street Apartments",
-        coords = vector4(-271.1, -957.5, 31.22, 291.66),
+        coords = vec4(-271.1, -957.5, 31.22, 291.66),
         IPL = "LowEnd", -- Config.IPLS["LowEnd"]
     },{
         name = "Morningwood Blvd",
-        coords = vector4(-1288.52, -430.51, 35.15, 124.81),
+        coords = vec4(-1288.52, -430.51, 35.15, 124.81),
         IPL = "LowEnd",
     },{
         name = "Tinsel Towers",
-        coords = vector4(-619.29, 37.69, 43.59, 181.03),
+        coords = vec4(-619.29, 37.69, 43.59, 181.03),
         IPL = "LowEnd",
     },{
         name = "Fantastic Plaza",
-        coords = vector4(291.517, -1078.674, 29.405, 270.75),
+        coords = vec4(291.517, -1078.674, 29.405, 270.75),
         IPL = "LowEnd",
     },
 }
 
----@type { [string]: { label: string, ipl: string | false, coords: { entrance: vector4, wardrobe: vector4 | boolean, stash: vector4, logout: vector3 | boolean }, style: table | nil } }
+---@type { [string]: { label: string, ipl: string | false, coords: { entrance: vector4, wardrobe: vector3 | boolean, stash: vector3, logout: vector3 | boolean, manage: vector3 | boolean }, style: table | nil } }
 Config.IPLS = { -- 'Ipls' can just be interiors that aren't proper IPLs, but are still interiors
     alta_street = {
         label = "Alta Street",
         ipl = false,
         coords = {
-            entrance = vector4(-271.87, -940.34, 92.51, 70),
-            wardrobe = vector4(-277.79, -960.54, 86.31, 70),
-            stash = vector4(-272.98, -950.01, 92.52, 70),
-            logout = vector3(-283.27, -959.68, 70),
+            entrance = vec4(-271.87, -940.34, 92.51, 70),
+            wardrobe = vec3(-277.79, -960.54, 86),
+            stash = vec3(-272.98, -950.01, 92.52),
+            logout = vec3(-283.27, -959.68, 70),
         }
     },
     eclipse_tower = {
         label = "Eclipse Tower",
         ipl = "apa_v_mp_h_01_a",
         coords = {
-            entrance = vector4(-786.866, 315.764, 217.638, 160),
-            wardrobe = vector4(-797.97, 329.0, 220.44, 172.76),
-            stash = vector4(-796.04, 326.82, 217.04, 348.06),
-            logout = vector3(-795.9, 336.0, 220.44),
+            entrance = vec4(-786.866, 315.764, 217.638, 160),
+            wardrobe = vec3(-797.97, 329.0, 220.44),
+            stash = vec3(-796.0, 327.7, 217.0),
+            logout = vec3(-795.9, 336.0, 220.44),
+            manage = vec3(-788.66, 320.83, 217.04)
         }
     },
     low_end = {
         label = "Low End",
         ipl = false,
         coords = {
-            entrance = vector4(265.95, -1007.41, -101.01, 2.71),
-            wardrobe = vector4(259.76, -1003.63, -99.01, 182.24),
-            stash = vector4(265.8, -999.47, -99.01, 268.16),
-            logout = vector3(262.9, -1003.09, -99.01),
+            entrance = vec4(265.95, -1007.41, -101.01, 2.71),
+            wardrobe = vec3(259.76, -1003.63, -99.01),
+            stash = vec3(265.8, -999.47, -99.01),
+            logout = vec3(262.9, -1003.09, -99.01),
         }
     },
     franklin = {
         label = "Franklin House",
         ipl = false,
         coords = {
-            entrance = vector4(7.66, 538.31, 176.03, 170),
-            wardrobe = vector4(8.65, 528, 170.62, 300),
-            stash = vector4(9.2, 535.55, 170.62, 206.48),
-            logout = vector3(0, 523, 170.62),
+            entrance = vec4(7.66, 538.31, 176.03, 170),
+            wardrobe = vec3(8.65, 528, 17),
+            stash = vec3(9.2, 535.55, 170.62),
+            logout = vec3(0, 523, 170.62),
         }
     },
     warehouse = {
         label = "Warehouse",
         ipl = false,
         coords = {
-            entrance = vector4(782.6, -2998.04, -69.0, 284.77),
+            entrance = vec4(782.6, -2998.04, -69.0, 284.77),
             wardrobe = false,
-            stash = vector4(787.85, -2991.92, -69.0, 272.58),
+            stash = vec3(787.85, -2991.92, -69.0),
             logout = false,
         }
     },
@@ -187,40 +188,40 @@ Config.IPLS = { -- 'Ipls' can just be interiors that aren't proper IPLs, but are
         label = "Fixer Office",
         ipl = false,
         coords = {
-            entrance = vector4(-1003.2, -774.7, 61.89, 356.88),
-            wardrobe = vector4(-997.55, -748.18, 70.49, 267.34),
-            stash = vector4(-1004.25, -758.83, 70.49, 184.27),
-            logout = vector3(-997.15, -757.16, 70.49),
+            entrance = vec4(-1003.2, -774.7, 61.89, 356.88),
+            wardrobe = vec3(-997.55, -748.18, 70.49),
+            stash = vec3(-1004.25, -758.83, 70.49),
+            logout = vec3(-997.15, -757.16, 70.49),
         }
     },
     office = {
         label = "Office",
         ipl = false,
         coords = {
-            entrance = vector4(-78.99, -829.41, 243.39, 249.68),
-            wardrobe = vector4(-78.87, -811.43, 243.39, 170.82),
-            stash = vector4(-81.78, -799.38, 243.39, 64.69),
-            logout = vector3(-83.26, -809.64, 243.39),
+            entrance = vec4(-78.99, -829.41, 243.39, 249.68),
+            wardrobe = vec3(-78.87, -811.43, 243.39),
+            stash = vec3(-81.78, -799.38, 243.39),
+            logout = vec3(-83.26, -809.64, 243.39),
         }
     },
     basement = {
         label = "Basement",
         ipl = false,
         coords = {
-            entrance = vector4(844.23, -3004.99, -44.4, 3.57),
-            wardrobe = vector4(0, 0, 0, 0),
-            stash = vector4(0, 0, 0, 0),
-            logout = vector3(0, 0, 0),
+            entrance = vec4(844.23, -3004.99, -44.4, 3.57),
+            wardrobe = vec3(0, 0, 0),
+            stash = vec3(0, 0, 0),
+            logout = vec3(0, 0, 0),
         }
     },
     small_methlab = {
         label = "Small Methlab",
         ipl = false,
         coords = {
-            entrance = vector4(482.35, -2623.92, -49.06, 183.29),
-            wardrobe = vector4(0, 0, 0, 0),
-            stash = vector4(0, 0, 0, 0),
-            logout = vector3(0, 0, 0),
+            entrance = vec4(482.35, -2623.92, -49.06, 183.29),
+            wardrobe = vec3(0, 0, 0),
+            stash = vec3(0, 0, 0),
+            logout = vec3(0, 0, 0),
         }
     }
 }
@@ -231,10 +232,10 @@ Config.Shells = {
         label = string, -- label for the shell
         shell = string, -- shell object/prop
         offsets = {
-            entrance = vector4(0, 0, 0, 0), -- required
-            wardrobe = vector4(0, 0, 0, 0), -- required
-            stash = vector4(0, 0, 0, 0), -- required
-            logout = vector3(0, 0, 0), -- required
+            entrance = vec4(0, 0, 0, 0), -- required
+            wardrobe = vec3(0, 0, 0, 0)required
+            stash = vec3(0, 0, 0, -- required
+            logout = vec3(0, 0, 0), -- required
         }
     } ]]
 }
@@ -705,10 +706,10 @@ Config.GarageIPLs = {
         label = "Arcade",
         ipl = false,
         coords = {
-            entrance = vector4(265.95, -1007.41, -101.01, 2.71),
-            wardrobe = vector4(259.76, -1003.63, -99.01, 182.24),
-            stash = vector4(265.8, -999.47, -99.01, 268.16),
-            logout = vector3(262.9, -1003.09, -99.01),
+            entrance = vec4(265.95, -1007.41, -101.01, 2.71),
+            wardrobe = vec3(259.76, -1003.63, -99.01),
+            stash = vec3(265.8, -999.47, -99.01),
+            logout = vec3(262.9, -1003.09, -99.01),
             slots = {
                 vec4(265.95, -1007.41, -101.01, 2.71),
                 vec4(265.95, -1007.41, -101.01, 2.71),
@@ -719,7 +720,7 @@ Config.GarageIPLs = {
         label = "Freak Shop",
         ipl = false,
         coords = {
-            entrance = vector4(570.0, -415.0, -70.0, 0),
+            entrance = vec4(570.0, -415.0, -70.0, 0),
             slots = {
                 vec4(0, 0, 0 ,0),
                 vec4(0, 0, 0 ,0),

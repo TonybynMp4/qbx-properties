@@ -233,3 +233,7 @@ end
 
 RegisterNetEvent('qbx-properties:client:concealPlayers', concealPlayers)
 RegisterNetEvent('qbx-properties:client:concealEntities', concealVehicles)
+
+RegisterNetEvent("qbx-properties:client:refreshInteriorZones", function(propertyId, coords)
+    CreatePropertyInteriorZones(coords, propertyId, false)
+end)
