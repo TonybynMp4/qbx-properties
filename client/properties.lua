@@ -535,7 +535,7 @@ local function populateRolesMenu(propertyId, propertyData)
         elseif args.action == "add" then
             local players = lib.getNearbyPlayers(GetEntityCoords(cache.ped), 10, Config.Properties.realtorsBuyThemselves or false)
             if not players then
-                QBCore.Functions.Notify(Lang:t('error.players_nearby'), 'error', 7500)
+                exports.qbx_core:Notify(Lang:t('error.players_nearby'), 'error', 7500)
                 return
             end
 
@@ -621,7 +621,7 @@ local function populateCoordsMenu(propertyId, propertyData)
         else
             newData.interiorCoords[args.action] = "reset"
             points[args.action].coords = configCoords[args.action].xyz
-            QBCore.Functions.Notify(Lang:t("manage_property_menu.manage_coords.willBeReset"), 'primary', 7500)
+            exports.qbx_core:Notify(Lang:t("manage_property_menu.manage_coords.willBeReset"), 'primary', 7500)
         end
     end)
 
@@ -681,20 +681,20 @@ local function openManageMenu(propertyId)
             end
         elseif args.action == "roles" then
             if Role ~= "owner" and Role ~= "co_owner" then
-                return QBCore.Functions.Notify(Lang:t('error.not_owner'), 'error', 7500)
+                return exports.qbx_core:Notify(Lang:t('error.not_owner'), 'error', 7500)
             end
             if populateRolesMenu(propertyId, propertyData) then
                 lib.showMenu('propertyRoles_menu')
             end
         elseif args.action == "customcoords" then
             if Role ~= "owner" and Role ~= "co_owner" then
-                return QBCore.Functions.Notify(Lang:t('error.not_owner'), 'error', 7500)
+                return exports.qbx_core:Notify(Lang:t('error.not_owner'), 'error', 7500)
             end
             populateCoordsMenu(propertyId, propertyData)
             lib.showMenu('propertyCoords_menu')
         elseif args.action == "decorate" then
             if Role ~= "owner" then
-                return QBCore.Functions.Notify(Lang:t('error.not_owner'), 'error', 7500)
+                return exports.qbx_core:Notify(Lang:t('error.not_owner'), 'error', 7500)
             end
             -- TODO: decoration menu
         elseif args.action == "vehicles" then

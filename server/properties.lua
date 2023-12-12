@@ -330,18 +330,18 @@ end
 RegisterNetEvent('qbx-properties:server:modifyRole', function(propertyId, citizenid, newRole)
     local source = source
     if not propertyId or not citizenid or not newRole then return end
-    local player = QBCore.Functions.GetPlayer(source)
+    local player = exports.qbx_core:GetPlayer(source)
     local PlayerData = player.PlayerData
     local playerRole = properties[propertyId].owners[PlayerData.citizenid]
     if playerRole ~= 'owner' and playerRole ~= "co_owner" then return end
 
     if newRole == 'remove' then
-        if not removeRole(citizenid, propertyId) then QBCore.Functions.Notify(source, Lang:t('error.problem'), 'error') return end
+        if not removeRole(citizenid, propertyId) then exports.qbx_core:Notify(source, Lang:t('error.problem'), 'error') return end
         properties[propertyId].owners[citizenid] = nil
         TriggerClientEvent('qbx-properties:client:refreshProperties', -1)
         return
     else
-        if not setRole(citizenid, propertyId, newRole) then QBCore.Functions.Notify(source, Lang:t('error.problem'), 'error') return end
+        if not setRole(citizenid, propertyId, newRole) then exports.qbx_core:Notify(source, Lang:t('error.problem'), 'error') return end
         properties[propertyId].owners[citizenid] = newRole
         TriggerClientEvent('qbx-properties:client:refreshProperties', -1)
         return
@@ -350,12 +350,12 @@ end)
 
 RegisterNetEvent('qbx-properties:server:addTenant', function(propertyId, playerId)
     local source = source
-    local player = QBCore.Functions.GetPlayer(source)
+    local player = exports.qbx_core:GetPlayer(source)
     local PlayerData = player.PlayerData
     local playerRole = properties[propertyId].owners[PlayerData.citizenid]
     if playerRole ~= 'owner' and playerRole ~= "co_owner" then return end
 
-    local targetPlayer = QBCore.Functions.GetPlayer(playerId)
+    local targetPlayer = exports.qbx_core:GetPlayer(playerId)
     if not targetPlayer then return end
     setRole(targetPlayer.PlayerData.citizenid, propertyId, "tenant")
 end)
