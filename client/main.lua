@@ -21,14 +21,13 @@ function CreatePropertyInteriorZones(coords, propertyId, isVisit)
     })
 
     function InteriorZones.entrance:nearby()
-        if not self then return end
-        if not self.currentDistance then return end
+        if not self?.currentDistance then return end
         local marker = Config.InteriorZones.entrance.marker
         DrawMarker(marker.type,
-            self.coords.x, self.coords.y, self.coords.z + marker.offsetZ,   -- coords
-            0.0, 0.0, 0.0,                                                  -- direction?
-            0.0, 0.0, 0.0,                                                  -- rotation
-            marker.scale.x, marker.scale.y, marker.scale.z,                 -- scale
+            self.coords.x, self.coords.y, self.coords.z + marker.offsetZ, -- coords
+            0.0, 0.0, 0.0, -- direction?
+            0.0, 0.0, 0.0, -- rotation
+            marker.scale.x, marker.scale.y, marker.scale.z, -- scale
             marker.color.r, marker.color.g, marker.color.b, marker.color.a, -- color RBGA
             false, false, 2, false, nil, nil, false
         )
@@ -36,103 +35,100 @@ function CreatePropertyInteriorZones(coords, propertyId, isVisit)
         if self.currentDistance < 1 then
             SetTextComponentFormat("STRING")
             AddTextComponentString(Lang:t('interiorZones.leave'))
-            DisplayHelpTextFromStringLabel(0, false, true, 20000)
+            DisplayHelpTextFromStringLabel(0, 0, 1, 20000)
             if IsControlJustPressed(0, 38) then
                 TriggerServerEvent('qbx-properties:server:leaveProperty', propertyId, cache.vehicle)
             end
         end
     end
 
-    if isVisit then return end
-    if coords.wardrobe then
-        InteriorZones.wardrobe = lib.points.new({
-            coords = customZones?.wardrobe?.xyz or coords.wardrobe.xyz,
-            distance = 7.5,
-        })
+    if not isVisit then
+        if coords.wardrobe then
+            InteriorZones.wardrobe = lib.points.new({
+                coords = customZones?.wardrobe?.xyz or coords.wardrobe.xyz,
+                distance = 7.5,
+            })
 
-        function InteriorZones.wardrobe:nearby()
-            if not self then return end
-            if not self.currentDistance then return end
-            local marker = Config.InteriorZones.wardrobe.marker
-            DrawMarker(marker.type,
-                self.coords.x, self.coords.y, self.coords.z + marker.offsetZ,       -- coords
-                0.0, 0.0, 0.0,                                                      -- direction?
-                0.0, 0.0, 0.0,                                                      -- rotation
-                marker.scale.x, marker.scale.y, marker.scale.z,                     -- scale
-                marker.color.r, marker.color.g, marker.color.b, marker.color.a,     -- color RBGA
-                false, true, 2, false, nil, nil, false
-            )
+            function InteriorZones.wardrobe:nearby()
+                if not self?.currentDistance then return end
+                local marker = Config.InteriorZones.wardrobe.marker
+                DrawMarker(marker.type,
+                    self.coords.x, self.coords.y, self.coords.z + marker.offsetZ, -- coords
+                    0.0, 0.0, 0.0, -- direction?
+                    0.0, 0.0, 0.0, -- rotation
+                    marker.scale.x, marker.scale.y, marker.scale.z, -- scale
+                    marker.color.r, marker.color.g, marker.color.b, marker.color.a, -- color RBGA
+                    false, true, 2, false, nil, nil, false
+                )
 
-            if self.currentDistance < 1 then
-                SetTextComponentFormat("STRING")
-                AddTextComponentString(Lang:t('interiorZones.wardrobe'))
-                DisplayHelpTextFromStringLabel(0, false, true, 20000)
-                if IsControlJustPressed(0, 38) then
-                    TriggerEvent('qb-clothing:client:openOutfitMenu')     -- definitely probably doesn't do shit with illenium
+                if self.currentDistance < 1 then
+                    SetTextComponentFormat("STRING")
+                    AddTextComponentString(Lang:t('interiorZones.wardrobe'))
+                    DisplayHelpTextFromStringLabel(0, 0, 1, 20000)
+                    if IsControlJustPressed(0, 38) then
+                        TriggerEvent('qb-clothing:client:openOutfitMenu') -- definitely probably doesn't do shit with illenium
+                    end
                 end
             end
         end
-    end
 
-    if coords.stash then
-        InteriorZones.stash = lib.points.new({
-            coords = customZones?.stash?.xyz or coords.stash.xyz,
-            distance = 7.5,
-        })
-        function InteriorZones.stash:nearby()
-            if not self then return end
-            if not self.currentDistance then return end
-            local marker = Config.InteriorZones.stash.marker
-            DrawMarker(marker.type,
-                self.coords.x, self.coords.y, self.coords.z + marker.offsetZ,   -- coords
-                0.0, 0.0, 0.0,                                                  -- direction?
-                0.0, 0.0, 0.0,                                                  -- rotation
-                marker.scale.x, marker.scale.y, marker.scale.z,                 -- scale
+        if coords.stash then
+            InteriorZones.stash = lib.points.new({
+                coords = customZones?.stash?.xyz or coords.stash.xyz,
+                distance = 7.5,
+            })
+            function InteriorZones.stash:nearby()
+                if not self?.currentDistance then return end
+                local marker = Config.InteriorZones.stash.marker
+                DrawMarker(marker.type,
+                self.coords.x, self.coords.y, self.coords.z + marker.offsetZ, -- coords
+                0.0, 0.0, 0.0, -- direction?
+                0.0, 0.0, 0.0, -- rotation
+                marker.scale.x, marker.scale.y, marker.scale.z, -- scale
                 marker.color.r, marker.color.g, marker.color.b, marker.color.a, -- color RBGA
                 false, true, 2, false, nil, nil, false
-            )
+                )
 
-            if self.currentDistance < 1 then
-                SetTextComponentFormat("STRING")
-                AddTextComponentString(Lang:t('interiorZones.stash'))
-                DisplayHelpTextFromStringLabel(0, false, true, 20000)
-                if IsControlJustPressed(0, 38) then
-                    exports.ox_inventory:openInventory("stash", propertyId and "property_" .. propertyId or "apartment_" .. PlayerData.citizenid)
+                if self.currentDistance < 1 then
+                    SetTextComponentFormat("STRING")
+                    AddTextComponentString(Lang:t('interiorZones.stash'))
+                    DisplayHelpTextFromStringLabel(0, 0, 1, 20000)
+                    if IsControlJustPressed(0, 38) then
+                        exports.ox_inventory:openInventory("stash", propertyId and "property_"..propertyId or "apartment_"..QBX.PlayerData.citizenid)
+                    end
                 end
             end
         end
-    end
 
-    if coords.logout then
-        InteriorZones.logout = lib.points.new({
-            coords = customZones?.logout?.xyz or coords.logout.xyz,
-            distance = 7.5,
-        })
-        function InteriorZones.logout:nearby()
-            if not self then return end
-            if not self.currentDistance then return end
-            local marker = Config.InteriorZones.logout.marker
-            DrawMarker(marker.type,
-                self.coords.x, self.coords.y, self.coords.z + marker.offsetZ,   -- coords
-                0.0, 0.0, 0.0,                                                  -- direction?
-                0.0, 0.0, 0.0,                                                  -- rotation
-                marker.scale.x, marker.scale.y, marker.scale.z,                 -- scale
+        if coords.logout then
+            InteriorZones.logout = lib.points.new({
+                coords = customZones?.logout?.xyz or coords.logout.xyz,
+                distance = 7.5,
+            })
+            function InteriorZones.logout:nearby()
+                if not self?.currentDistance then return end
+                local marker = Config.InteriorZones.logout.marker
+                DrawMarker(marker.type,
+                self.coords.x, self.coords.y, self.coords.z + marker.offsetZ, -- coords
+                0.0, 0.0, 0.0, -- direction?
+                0.0, 0.0, 0.0, -- rotation
+                marker.scale.x, marker.scale.y, marker.scale.z, -- scale
                 marker.color.r, marker.color.g, marker.color.b, marker.color.a, -- color RBGA
                 false, true, 2, false, nil, nil, false
-            )
+                )
 
-            if self.currentDistance < 1 then
-                SetTextComponentFormat("STRING")
-                AddTextComponentString(Lang:t('interiorZones.logout'))
-                DisplayHelpTextFromStringLabel(0, false, true, 20000)
-                if IsControlJustPressed(0, 38) then
-                    TriggerServerEvent('qbx-properties:server:Logout')
+                if self.currentDistance < 1 then
+                    SetTextComponentFormat("STRING")
+                    AddTextComponentString(Lang:t('interiorZones.logout'))
+                    DisplayHelpTextFromStringLabel(0, 0, 1, 20000)
+                    if IsControlJustPressed(0, 38) then
+                        TriggerEvent('qbx-properties:server:Logout')
+                    end
                 end
             end
-        end
-    end
-
-    if coords.manage then
+      end
+      
+                  if coords.manage then
         InteriorZones.manage = lib.points.new({
             coords = customZones?.manage?.xyz or coords.manage.xyz,
             distance = 15,
@@ -168,7 +164,7 @@ end
 function GetRoundedCoords(coords)
     local newcoords = {}
     for k, v in pairs(coords) do
-        newcoords[k] = math.floor(v * 1000) / 1000
+        newcoords[k] = math.round(v, 3)
     end
     return newcoords
 end
@@ -202,7 +198,6 @@ end
 
 --- Remove blips
 function RemoveBlips()
-    if table.type(blips) == 'empty' then return end
     for _, blip in pairs(blips) do
         RemoveBlip(blip)
     end
@@ -213,8 +208,7 @@ end
 ---@param players table
 ---@param conceal boolean
 local function concealPlayers(players, conceal)
-    if GetInvokingResource() ~= nil then return end
-    if not players then return end
+    if GetInvokingResource() or not players then return end
 
     for i = 1, #players do
         NetworkConcealPlayer(players[i], conceal, false)
@@ -222,8 +216,7 @@ local function concealPlayers(players, conceal)
 end
 
 local function concealVehicles(netids, conceal)
-    if GetInvokingResource() ~= nil then return end
-    if not netids then return end
+    if GetInvokingResource() or not netids then return end
 
     for i = 1, #netids do
         local entity = NetToVeh(netids[i])

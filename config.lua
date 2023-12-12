@@ -131,15 +131,15 @@ Config.apartmentlocations = {
     },
 }
 
----@type { [string]: { label: string, ipl: string | false, coords: { entrance: vector4, wardrobe: vector3 | boolean, stash: vector3, logout: vector3 | boolean, manage: vector3 | boolean }, style: table | nil } }
+---@type { [string]: { label: string, ipl: string | false, coords: { entrance: vector4, wardrobe: vector4 | boolean, stash: vector4, manage: vector3, logout: vector3 | boolean }, style: table | nil } }
 Config.IPLS = { -- 'Ipls' can just be interiors that aren't proper IPLs, but are still interiors
     alta_street = {
         label = "Alta Street",
         ipl = false,
         coords = {
             entrance = vec4(-271.87, -940.34, 92.51, 70),
-            wardrobe = vec3(-277.79, -960.54, 86),
-            stash = vec3(-272.98, -950.01, 92.52),
+            wardrobe = vec4(-277.79, -960.54, 86.31, 70),
+            stash = vec4(-272.98, -950.01, 92.52, 70),
             logout = vec3(-283.27, -959.68, 70),
         }
     },
@@ -148,10 +148,10 @@ Config.IPLS = { -- 'Ipls' can just be interiors that aren't proper IPLs, but are
         ipl = "apa_v_mp_h_01_a",
         coords = {
             entrance = vec4(-786.866, 315.764, 217.638, 160),
-            wardrobe = vec3(-797.97, 329.0, 220.44),
-            stash = vec3(-796.0, 327.7, 217.0),
-            logout = vec3(-795.9, 336.0, 220.44),
             manage = vec3(-788.66, 320.83, 217.04)
+            wardrobe = vec4(-797.97, 329.0, 220.44, 172.76),
+            stash = vec4(-796.04, 326.82, 217.04, 348.06),
+            logout = vec3(-795.9, 336.0, 220.44),
         }
     },
     low_end = {
@@ -159,8 +159,8 @@ Config.IPLS = { -- 'Ipls' can just be interiors that aren't proper IPLs, but are
         ipl = false,
         coords = {
             entrance = vec4(265.95, -1007.41, -101.01, 2.71),
-            wardrobe = vec3(259.76, -1003.63, -99.01),
-            stash = vec3(265.8, -999.47, -99.01),
+            wardrobe = vec4(259.76, -1003.63, -99.01, 182.24),
+            stash = vec4(265.8, -999.47, -99.01, 268.16),
             logout = vec3(262.9, -1003.09, -99.01),
         }
     },
@@ -169,8 +169,8 @@ Config.IPLS = { -- 'Ipls' can just be interiors that aren't proper IPLs, but are
         ipl = false,
         coords = {
             entrance = vec4(7.66, 538.31, 176.03, 170),
-            wardrobe = vec3(8.65, 528, 17),
-            stash = vec3(9.2, 535.55, 170.62),
+            wardrobe = vec4(8.65, 528, 170.62, 300),
+            stash = vec4(9.2, 535.55, 170.62, 206.48),
             logout = vec3(0, 523, 170.62),
         }
     },
@@ -180,7 +180,7 @@ Config.IPLS = { -- 'Ipls' can just be interiors that aren't proper IPLs, but are
         coords = {
             entrance = vec4(782.6, -2998.04, -69.0, 284.77),
             wardrobe = false,
-            stash = vec3(787.85, -2991.92, -69.0),
+            stash = vec4(787.85, -2991.92, -69.0, 272.58),
             logout = false,
         }
     },
@@ -189,8 +189,8 @@ Config.IPLS = { -- 'Ipls' can just be interiors that aren't proper IPLs, but are
         ipl = false,
         coords = {
             entrance = vec4(-1003.2, -774.7, 61.89, 356.88),
-            wardrobe = vec3(-997.55, -748.18, 70.49),
-            stash = vec3(-1004.25, -758.83, 70.49),
+            wardrobe = vec4(-997.55, -748.18, 70.49, 267.34),
+            stash = vec4(-1004.25, -758.83, 70.49, 184.27),
             logout = vec3(-997.15, -757.16, 70.49),
         }
     },
@@ -199,8 +199,8 @@ Config.IPLS = { -- 'Ipls' can just be interiors that aren't proper IPLs, but are
         ipl = false,
         coords = {
             entrance = vec4(-78.99, -829.41, 243.39, 249.68),
-            wardrobe = vec3(-78.87, -811.43, 243.39),
-            stash = vec3(-81.78, -799.38, 243.39),
+            wardrobe = vec4(-78.87, -811.43, 243.39, 170.82),
+            stash = vec4(-81.78, -799.38, 243.39, 64.69),
             logout = vec3(-83.26, -809.64, 243.39),
         }
     },
@@ -209,8 +209,8 @@ Config.IPLS = { -- 'Ipls' can just be interiors that aren't proper IPLs, but are
         ipl = false,
         coords = {
             entrance = vec4(844.23, -3004.99, -44.4, 3.57),
-            wardrobe = vec3(0, 0, 0),
-            stash = vec3(0, 0, 0),
+            wardrobe = vec4(0, 0, 0, 0),
+            stash = vec4(0, 0, 0, 0),
             logout = vec3(0, 0, 0),
         }
     },
@@ -219,8 +219,8 @@ Config.IPLS = { -- 'Ipls' can just be interiors that aren't proper IPLs, but are
         ipl = false,
         coords = {
             entrance = vec4(482.35, -2623.92, -49.06, 183.29),
-            wardrobe = vec3(0, 0, 0),
-            stash = vec3(0, 0, 0),
+            wardrobe = vec4(0, 0, 0, 0),
+            stash = vec4(0, 0, 0, 0),
             logout = vec3(0, 0, 0),
         }
     }
@@ -233,14 +233,15 @@ Config.Shells = {
         shell = string, -- shell object/prop
         offsets = {
             entrance = vec4(0, 0, 0, 0), -- required
-            wardrobe = vec3(0, 0, 0, 0)required
-            stash = vec3(0, 0, 0, -- required
+            wardrobe = vec4(0, 0, 0, 0), -- required
+            stash = vec4(0, 0, 0, 0), -- required
+            manage = vec4(0, 0, 0, 0) -- required
             logout = vec3(0, 0, 0), -- required
         }
     } ]]
 }
 
----@type { [string]: { label: string, ipl: string | false, coords: { entrance: vector4, slots: { index: vector4 }}, style: table } }
+---@type { [string]: { label: string, ipl: string | false, coords: { entrance: vector4, slots: { index: vector4 }, manage: vector4}, style: table } }
 Config.GarageIPLs = {
     low_end = {
         label = "Low End",
@@ -707,8 +708,8 @@ Config.GarageIPLs = {
         ipl = false,
         coords = {
             entrance = vec4(265.95, -1007.41, -101.01, 2.71),
-            wardrobe = vec3(259.76, -1003.63, -99.01),
-            stash = vec3(265.8, -999.47, -99.01),
+            wardrobe = vec4(259.76, -1003.63, -99.01, 182.24),
+            stash = vec4(265.8, -999.47, -99.01, 268.16),
             logout = vec3(262.9, -1003.09, -99.01),
             slots = {
                 vec4(265.95, -1007.41, -101.01, 2.71),
