@@ -215,7 +215,7 @@ RegisterNetEvent('qbx_properties:server:enterGarage', function(propertyId, isVis
 
     if isInVehicle then
         if isVisit then
-            return exports.qbx_core:Notify(source, Lang:t('error.inVehicle'), 'error')
+            return exports.qbx_core:Notify(source, locale('error.inVehicle'), 'error')
         end
         return -- Do nothing for now
         -- get the vehicle, add it to the garage and remove it from the world
@@ -271,7 +271,7 @@ RegisterNetEvent('qbx_properties:server:CreateProperty', function(propertyData)
 
     local propertyId = createProperty(propertyData)
     if not propertyId then
-        exports.qbx_core:Notify(source, Lang:t('error.failed_createproperty'), 'error')
+        exports.qbx_core:Notify(source, locale('error.failed_createproperty'), 'error')
         return
     end
 
@@ -319,11 +319,11 @@ local function buyProperty(propertyId, playerId, price)
     if not player then return 'error' end
     local moneyType = hasMoney(player, price)
     if not moneyType then
-        exports.qbx_core:Notify(playerId, Lang:t('error.notenoughmoney'), 'error')
+        exports.qbx_core:Notify(playerId, locale('error.notenoughmoney'), 'error')
         return false
     end
 
-    if not player.Functions.RemoveMoney(moneyType, price, 'Bought property') or not setRole(playerId, propertyId, "owner") then exports.qbx_core:Notify(playerId, Lang:t('error.problem'), 'error') return false end
+    if not player.Functions.RemoveMoney(moneyType, price, 'Bought property') or not setRole(playerId, propertyId, "owner") then exports.qbx_core:Notify(playerId, locale('error.problem'), 'error') return false end
     properties[propertyId].owners[player.PlayerData.citizenid] = 'owner'
     return true
 end
@@ -337,12 +337,12 @@ RegisterNetEvent('qbx_properties:server:modifyRole', function(propertyId, citize
     if playerRole ~= 'owner' and playerRole ~= "co_owner" then return end
 
     if newRole == 'remove' then
-        if not removeRole(citizenid, propertyId) then exports.qbx_core:Notify(source, Lang:t('error.problem'), 'error') return end
+        if not removeRole(citizenid, propertyId) then exports.qbx_core:Notify(source, locale('error.problem'), 'error') return end
         properties[propertyId].owners[citizenid] = nil
         TriggerClientEvent('qbx_properties:client:refreshProperties', -1)
         return
     else
-        if not setRole(citizenid, propertyId, newRole) then exports.qbx_core:Notify(source, Lang:t('error.problem'), 'error') return end
+        if not setRole(citizenid, propertyId, newRole) then exports.qbx_core:Notify(source, locale('error.problem'), 'error') return end
         properties[propertyId].owners[citizenid] = newRole
         TriggerClientEvent('qbx_properties:client:refreshProperties', -1)
         return
@@ -368,26 +368,26 @@ RegisterNetEvent('qbx_properties:server:sellProperty', function(targetId, proper
     if PlayerData.job.name ~= 'realestate' then return end
 
     local property = properties[propertyId]
-    if not property then return exports.qbx_core:Notify(source, Lang:t('error.problem'), 'error') end
+    if not property then return exports.qbx_core:Notify(source, locale('error.problem'), 'error') end
 
     local propertyPrice = calcPrice(property.price, property.appliedtaxes)
     local priceToPay = qbx.math.round((propertyPrice * (1+(comission/100))))
 
     local isAccepted = lib.callback.await("qbx_properties:client:promptOffer", targetId, priceToPay, false)
-    if not isAccepted then return exports.qbx_core:Notify(source, Lang:t('error.offerDenied'), 'error') end
+    if not isAccepted then return exports.qbx_core:Notify(source, locale('error.offerDenied'), 'error') end
 
     local hasBought = buyProperty(propertyId, targetId, priceToPay)
     if not hasBought then
-        return exports.qbx_core:Notify(source, Lang:t("error.problem"), 'error', 7500)
+        return exports.qbx_core:Notify(source, locale("error.problem"), 'error', 7500)
     end
     player.Functions.AddMoney('bank', propertyPrice*(comission/100), 'Sold property')
-    exports.qbx_core:Notify(targetId, Lang:t('success.boughtProperty', {price = priceToPay}), 'success')
-    exports.qbx_core:Notify(source, Lang:t('success.soldProperty', {price = propertyPrice}), 'success')
+    exports.qbx_core:Notify(targetId, locale('success.boughtProperty', priceToPay), 'success')
+    exports.qbx_core:Notify(source, locale('success.soldProperty', propertyPrice), 'success')
 end)
 
 local function extendRent(propertyId, playerId, time)
     if not MySQL.update.await('UPDATE `properties` SET `rent_expiration` = IF(`rent_expiration` IS NULL, DATE_ADD(NOW(), INTERVAL @time DAY), DATE_ADD(`rent_expiration`, INTERVAL @time DAY)) WHERE `id` = @propertyId', { time = time, propertyId = propertyId }) then
-        exports.qbx_core:Notify(playerId, Lang:t('error.problem'), 'error')
+        exports.qbx_core:Notify(playerId, locale('error.problem'), 'error')
         return false
     end
     properties[propertyId].rent_expiration = (properties[propertyId].rent_expiration or -1) + Config.Properties.rentTime
@@ -399,14 +399,14 @@ local function rentProperty(propertyId, playerId, price, isExtend)
     if not player then return false end
     local moneyType = hasMoney(player, price)
     if not moneyType then
-        exports.qbx_core:Notify(playerId, Lang:t('error.notenoughmoney'), 'error')
+        exports.qbx_core:Notify(playerId, locale('error.notenoughmoney'), 'error')
         return false
     end
 
-    if not player.Functions.RemoveMoney(moneyType, price, 'Property rent') then exports.qbx_core:Notify(playerId, Lang:t('error.problem'), 'error') return false end
+    if not player.Functions.RemoveMoney(moneyType, price, 'Property rent') then exports.qbx_core:Notify(playerId, locale('error.problem'), 'error') return false end
     extendRent(propertyId, playerId, Config.Properties.rentTime)
     if not isExtend then
-        if not setRole(playerId, propertyId, "owner") then exports.qbx_core:Notify(playerId, Lang:t('error.problem'), 'error') return false end
+        if not setRole(playerId, propertyId, "owner") then exports.qbx_core:Notify(playerId, locale('error.problem'), 'error') return false end
         properties[propertyId].owners[player.PlayerData.citizenid] = 'owner'
     end
     return true
@@ -419,19 +419,19 @@ RegisterNetEvent('qbx_properties:server:rentProperty', function(targetId, proper
     if PlayerData.job.name ~= 'realestate' then return end
 
     local property = properties[propertyId]
-    if not property then return exports.qbx_core:Notify(source, Lang:t('error.problem'), 'error') end
+    if not property then return exports.qbx_core:Notify(source, locale('error.problem'), 'error') end
 
     local rentAmount = calcPrice(property.rent, property.appliedtaxes) * Config.Properties.rentTime
     local isAccepted = lib.callback.await("qbx_properties:client:promptOffer", targetId, rentAmount, true)
-    if not isAccepted then return exports.qbx_core:Notify(source, Lang:t('error.offerDenied'), 'error') end
+    if not isAccepted then return exports.qbx_core:Notify(source, locale('error.offerDenied'), 'error') end
 
     local hasBought = rentProperty(propertyId, targetId, rentAmount, isExtend)
     if not hasBought then
-        return exports.qbx_core:Notify(source, Lang:t("error.problem"), 'error', 7500)
+        return exports.qbx_core:Notify(source, locale("error.problem"), 'error', 7500)
     end
     player.Functions.AddMoney('bank', rentAmount*(Config.Properties.realtorCommission.rent), 'Rent Commission')
-    exports.qbx_core:Notify(targetId, Lang:t('success.boughtProperty', {price = rentAmount}), 'success')
-    exports.qbx_core:Notify(source, Lang:t('success.soldProperty', {price = rentAmount}), 'success')
+    exports.qbx_core:Notify(targetId, locale('success.boughtProperty', rentAmount), 'success')
+    exports.qbx_core:Notify(source, locale('success.soldProperty', rentAmount), 'success')
 end)
 
 RegisterNetEvent('qbx_properties:server:AddProperty', function()

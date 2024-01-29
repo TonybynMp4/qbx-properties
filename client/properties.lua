@@ -37,7 +37,7 @@ local function createInteriorsList(Garage, Furnished)
     local options = {}
     for k,v in pairs(Garage and Config.GarageIPLs or Furnished and Config.IPLS or Config.Shells) do
         options[#options+1] = {}
-        options[#options].label = Garage and Lang:t('create_property_menu.interior_label_garage', {interior = v.label, slots = #v.coords?.slots}) or v.label
+        options[#options].label = Garage and locale('create_property_menu.interior_label_garage', v.label, #v.coords?.slots) or v.label
         options[#options].value = k
     end
     return options
@@ -63,9 +63,9 @@ local function showSelectionScaleform(scaleform, action)
     PopScaleformMovieFunctionVoid()
 
     local scaleformButtons = {
-        {GetControlInstructionalButton(0, 38, true), Lang:t("selection.action", {action = action})},
-        {GetControlInstructionalButton(0, 120, true), Lang:t("selection.cancel")},
-        {GetControlInstructionalButton(0, 44, true), Lang:t("selection.nextPlayer")}
+        {GetControlInstructionalButton(0, 38, true), locale("selection.action", action)},
+        {GetControlInstructionalButton(0, 120, true), locale("selection.cancel")},
+        {GetControlInstructionalButton(0, 44, true), locale("selection.nextPlayer")}
     }
 
     for i = 1, #scaleformButtons, 1 do
@@ -103,7 +103,7 @@ local function selectPlayer(players, action, callback)
                 break
             elseif IsControlJustPressed(0, 120) then -- X
                 inSelection = false
-                exports.qbx_core:Notify(Lang:t("error.cancelled"), 'error', 7500)
+                exports.qbx_core:Notify(locale("error.cancelled"), 'error', 7500)
                 break
             elseif IsControlJustPressed(0, 44) then -- Q (A on AZERTY)
                 if playerNumber >= #players then
@@ -136,7 +136,7 @@ local function sellToPlayer(propertyData)
 
     local players = lib.getNearbyPlayers(GetEntityCoords(cache.ped), 10, Config.Properties.realtorsBuyThemselves)
     if not players then
-        exports.qbx_core:Notify(Lang:t('error.players_nearby'), 'error', 7500)
+        exports.qbx_core:Notify(locale('error.players_nearby'), 'error', 7500)
         return
     end
 
@@ -151,7 +151,7 @@ end
 local function rentToPlayer(propertyData, isExtend)
     local players = lib.getNearbyPlayers(GetEntityCoords(cache.ped), 10, Config.Properties.realtorsBuyThemselves)
     if not players then
-        exports.qbx_core:Notify(Lang:t('error.players_nearby'), 'error', 7500)
+        exports.qbx_core:Notify(locale('error.players_nearby'), 'error', 7500)
         return
     end
 
@@ -164,7 +164,7 @@ end
 ---@param taxes table
 ---@return string
 local function getTaxesString(taxes)
-    if not taxes or not next(taxes) then return Lang:t('general.none') end
+    if not taxes or not next(taxes) then return locale('general.none') end
     local str = ""
     for k in pairs(taxes) do
         str = str .. k .. ", "
@@ -177,22 +177,22 @@ end
 local function modifyProperty(propertyData)
     local newData = {}
     local options = {
-        {label = Lang:t('modify_property_menu.name', {name = propertyData.name}), args = { action = "name" }, close = true},
-        {label = Lang:t('modify_property_menu.price', {price = propertyData.price}), args = { action = "price" }, close = true},
-        {label = Lang:t('modify_property_menu.rent', {price = propertyData.rent}), args = { action = "rent" }, close = true},
-        {label = Lang:t('modify_property_menu.property_type', {property_type = Lang:t('general.'..propertyData.property_type)}), close = false},
-        {label = Lang:t('modify_property_menu.interior', {interior = propertyData.interior}), args = { action = "interior" }, close = true},
+        {label = locale('modify_property_menu.name', propertyData.name), args = { action = "name" }, close = true},
+        {label = locale('modify_property_menu.price', propertyData.price), args = { action = "price" }, close = true},
+        {label = locale('modify_property_menu.rent', propertyData.rent), args = { action = "rent" }, close = true},
+        {label = locale('modify_property_menu.property_type', locale('general.'..propertyData.property_type)), close = false},
+        {label = locale('modify_property_menu.interior', propertyData.interior), args = { action = "interior" }, close = true},
     }
 
     if propertyData.property_type ~= 'garage' then
-        options[#options+1] = {label = Lang:t('modify_property_menu.storage.slots', {value = propertyData.slots or 0}), args = { action = "slots" }, close = true}
-        options[#options+1] = {label = Lang:t('modify_property_menu.storage.maxweight', {value = propertyData.maxweight/1000}), args = { action = "maxweight" }, close = true}
+        options[#options+1] = {label = locale('modify_property_menu.storage.slots', propertyData.slots or 0), args = { action = "slots" }, close = true}
+        options[#options+1] = {label = locale('modify_property_menu.storage.maxweight', propertyData.maxweight/1000), args = { action = "maxweight" }, close = true}
     end
     if Config.Properties.useTaxes then
-        options[#options+1] = {label = Lang:t('modify_property_menu.taxes', {taxes = getTaxesString(propertyData.appliedtaxes)}), args = { action = "taxes" }, close = true}
+        options[#options+1] = {label = locale('modify_property_menu.taxes', getTaxesString(propertyData.appliedtaxes)), args = { action = "taxes" }, close = true}
     end
-    options[#options+1] = {label = Lang:t('modify_property_menu.coords'), args = { action = "coords" }, close = true}
-    options[#options+1] = {label = Lang:t('modify_property_menu.done'), args = { action = "done" }, close = true}
+    options[#options+1] = {label = locale('modify_property_menu.coords'), args = { action = "coords" }, close = true}
+    options[#options+1] = {label = locale('modify_property_menu.done'), args = { action = "done" }, close = true}
 
     local point = lib.points.new({
         coords = propertyData.coords.xyz,
@@ -214,7 +214,7 @@ local function modifyProperty(propertyData)
 
     lib.registerMenu({
         id = 'modify_property_menu',
-        title = Lang:t('modify_property_menu.title'),
+        title = locale('modify_property_menu.title'),
         position = 'top-left',
         options = options,
     }, function(_, _, args)
@@ -231,38 +231,38 @@ local function modifyProperty(propertyData)
             end
         elseif args.action == "price" or args.action == "rent" then
             local price = newData[args.action] or propertyData[args.action]
-            local input = lib.inputDialog(Lang:t('modify_property_menu.title'), {
-                {type = 'input', label = Lang:t('modify_property_menu.'..args.action, {price = price}), default = price, required = true},
+            local input = lib.inputDialog(locale('modify_property_menu.title'), {
+                {type = 'input', label = locale('modify_property_menu.'..args.action, price), default = price, required = true},
             }, {allowCancel = true})
 
             if input then
                 newData[args.action] = tonumber(input[1])
                 local newOptions = options[args.action == "price" and 2 or 3]
-                newOptions.label = Lang:t('modify_property_menu.'..args.action, {price = newData[args.action]})
+                newOptions.label = locale('modify_property_menu.'..args.action, newData[args.action])
                 lib.setMenuOptions('modify_property_menu', newOptions, args.action == "price" and 2 or 3)
             end
         elseif args.action == "interior" then
             local interior = newData.interior or propertyData.interior
-            local input = lib.inputDialog(Lang:t('modify_property_menu.title'), {
-                {type = 'select', label = Lang:t('modify_property_menu.interior', {interior = interior}), default = interior, options = createInteriorsList(propertyData.property_type == 'garage', propertyData.property_type ~= 'garage')},
+            local input = lib.inputDialog(locale('modify_property_menu.title'), {
+                {type = 'select', label = locale('modify_property_menu.interior', interior), default = interior, options = createInteriorsList(propertyData.property_type == 'garage', propertyData.property_type ~= 'garage')},
             }, {allowCancel = true})
 
             if input then
                 newData.interior = input[1]
                 local newOptions = options[5]
-                newOptions.label = Lang:t('modify_property_menu.interior', {interior = newData.interior})
+                newOptions.label = locale('modify_property_menu.interior', newData.interior)
                 lib.setMenuOptions('modify_property_menu', newOptions, 5)
             end
         elseif args.action == "slots" or args.action == "maxweight" then
             local value = (newData[args.action] or propertyData[args.action]) / (args.action == "maxweight" and 1000 or 1)
-            local input = lib.inputDialog(Lang:t('modify_property_menu.title'), {
-                {type = 'number', label = Lang:t('modify_property_menu.storage.'..args.action, {value = value}), default = value, required = true},
+            local input = lib.inputDialog(locale('modify_property_menu.title'), {
+                {type = 'number', label = locale('modify_property_menu.storage.'..args.action, value), default = value, required = true},
             }, {allowCancel = true})
 
             if input then
                 newData[args.action] = tonumber(input[1]) * (args.action == "maxweight" and 1000 or 1)
                 local newOptions = options[args.action == "slots" and 6 or 7]
-                newOptions.label = Lang:t('modify_property_menu.storage.'..args.action, {value = newData[args.action] / (args.action == "maxweight" and 1000 or 1)})
+                newOptions.label = locale('modify_property_menu.storage.'..args.action, newData[args.action] / (args.action == "maxweight" and 1000 or 1))
                 lib.setMenuOptions('modify_property_menu', newOptions, args.action == "slots" and 6 or 7)
             end
         elseif args.action == "taxes" then
@@ -272,13 +272,13 @@ local function modifyProperty(propertyData)
             for k in pairs(taxes) do
                 default[#default+1] = k
             end
-            local input = lib.inputDialog(Lang:t('modify_property_menu.title'), {
-                {type = 'multi-select', label = Lang:t('modify_property_menu.taxes', {taxes = getTaxesString(taxes)}), default = default, options = getTaxesList()},
+            local input = lib.inputDialog(locale('modify_property_menu.title'), {
+                {type = 'multi-select', label = locale('modify_property_menu.taxes', getTaxesString(taxes)), default = default, options = getTaxesList()},
             }, {allowCancel = true})
             if input then
                 newData.taxes = getAppliedTaxesList(input[1])
                 local newOptions = options[index]
-                newOptions.label = Lang:t('modify_property_menu.taxes', {taxes = getTaxesString(newData.taxes)})
+                newOptions.label = locale('modify_property_menu.taxes', getTaxesString(newData.taxes))
                 lib.setMenuOptions('modify_property_menu', newOptions, index)
             end
         elseif args.action == "coords" then
@@ -312,7 +312,7 @@ local function populatePropertyMenu(propertyData, propertyType)
     if isBought or isRented then
         if hasKeys then
             options[#options+1] = {
-                label = Lang:t('property_menu.enter'),
+                label = locale('property_menu.enter'),
                 icon = 'door-open',
                 args = {
                     action = 'enter',
@@ -323,7 +323,7 @@ local function populatePropertyMenu(propertyData, propertyType)
             }
         else
             options[#options+1] = {
-                label = Lang:t('property_menu.ring'),
+                label = locale('property_menu.ring'),
                 icon = 'bell',
                 args = {
                     action = 'ring',
@@ -335,8 +335,8 @@ local function populatePropertyMenu(propertyData, propertyType)
         end
         if isRented and isRealEstateAgent then
             options[#options+1] = {
-                label = Lang:t('property_menu.extend_rent'),
-                description = Lang:t('property_menu.extend_rent_desc', {rent_expiration = propertyData.rent_expiration, price = calcPrice(propertyData.rent, propertyData.appliedtaxes)}),
+                label = locale('property_menu.extend_rent'),
+                description = locale('property_menu.extend_rent_desc', propertyData.rent_expiration, calcPrice(propertyData.rent, propertyData.appliedtaxes)),
                 icon = 'file-invoice-dollar',
                 args = {
                     action = 'extend_rent',
@@ -348,7 +348,7 @@ local function populatePropertyMenu(propertyData, propertyType)
         end
     else
         options[#options+1] = {
-            label = Lang:t('property_menu.visit'),
+            label = locale('property_menu.visit'),
             icon = 'door-open',
             args = {
                 action = 'visit',
@@ -359,8 +359,8 @@ local function populatePropertyMenu(propertyData, propertyType)
         }
         if isRealEstateAgent then
             options[#options+1] = {
-                label = Lang:t('property_menu.sell'),
-                description = Lang:t('property_menu.sell_desc', {price = calcPrice(propertyData.price, propertyData.taxes)}),
+                label = locale('property_menu.sell'),
+                description = locale('property_menu.sell_desc', calcPrice(propertyData.price, propertyData.taxes)),
                 icon = 'file-invoice-dollar',
                 args = {
                     action = 'sell',
@@ -370,8 +370,8 @@ local function populatePropertyMenu(propertyData, propertyType)
                 close = true
             }
             options[#options+1] = {
-                label = Lang:t('property_menu.rent', {price = calcPrice(propertyData.rent, propertyData.taxes)}),
-                description = Lang:t('property_menu.rent_desc', {price = calcPrice(propertyData.rent, propertyData.taxes)}),
+                label = locale('property_menu.rent', calcPrice(propertyData.rent, propertyData.taxes)),
+                description = locale('property_menu.rent_desc', calcPrice(propertyData.rent, propertyData.taxes)),
                 icon = 'file-invoice-dollar',
                 args = {
                     action = 'rent',
@@ -385,7 +385,7 @@ local function populatePropertyMenu(propertyData, propertyType)
 
     if isRealEstateAgent then
         options[#options+1] = {
-            label = Lang:t('property_menu.modify'),
+            label = locale('property_menu.modify'),
             icon = "toolbox",
             args = {
                 action = 'modify',
@@ -397,7 +397,7 @@ local function populatePropertyMenu(propertyData, propertyType)
     end
 
     options[#options+1] = {
-        label = Lang:t('property_menu.back'),
+        label = locale('property_menu.back'),
         icon = 'arrow-left',
         args = {
             action = 'back',
@@ -464,7 +464,7 @@ local function populatePropertiesMenu(ids, propertyType, coords)
 
     if QBX.PlayerData.job.name == 'realestate' then
         options[#options+1] = {
-            label = Lang:t('properties_menu.create'),
+            label = locale('properties_menu.create'),
             icon = 'plus',
             args = {
                 action = 'create',
@@ -501,7 +501,7 @@ local function populateRolesMenu(propertyId, propertyData)
         options[#options+1] = {
             label = playerNames[citizenid],
             icon = 'user',
-            values = {Lang:t('general.owner'), Lang:t('general.co_owner'), Lang:t("general.tenant"), Lang:t('general.remove')},
+            values = {locale('general.owner'), locale('general.co_owner'), locale("general.tenant"), locale('general.remove')},
             defaultindex = role == "owner" and 1 or role == "co_owner" and 2 or 3,
             args = {
                 action = 'role',
@@ -513,7 +513,7 @@ local function populateRolesMenu(propertyId, propertyData)
     end
 
     options[#options+1] = {
-        label = Lang:t('manage_property_menu.manage_roles.add'),
+        label = locale('manage_property_menu.manage_roles.add'),
         icon = 'plus',
         args = {
             action = 'add',
@@ -524,7 +524,7 @@ local function populateRolesMenu(propertyId, propertyData)
 
     lib.registerMenu({
         id = 'propertyRoles_menu',
-        title = Lang:t('manage_property_menu.manage_roles.title'),
+        title = locale('manage_property_menu.manage_roles.title'),
         position = 'top-left',
         options = options
     }, function(_, scrollIndex, args)
@@ -534,7 +534,7 @@ local function populateRolesMenu(propertyId, propertyData)
         elseif args.action == "add" then
             local players = lib.getNearbyPlayers(GetEntityCoords(cache.ped), 10, Config.Properties.realtorsBuyThemselves or false)
             if not players then
-                exports.qbx_core:Notify(Lang:t('error.players_nearby'), 'error', 7500)
+                exports.qbx_core:Notify(locale('error.players_nearby'), 'error', 7500)
                 return
             end
 
@@ -562,9 +562,9 @@ local function populateCoordsMenu(propertyId, propertyData)
 
     for k, v in pairs(propertyCoords) do
         options[#options+1] = {
-            label = Lang:t('manage_property_menu.manage_coords.'..k),
+            label = locale('manage_property_menu.manage_coords.'..k),
             icon = 'map-marker',
-            values = {Lang:t('manage_property_menu.manage_coords.set'), Lang:t('manage_property_menu.manage_coords.reset')},
+            values = {locale('manage_property_menu.manage_coords.set'), locale('manage_property_menu.manage_coords.reset')},
             args = {
                 action = k,
                 coord = v,
@@ -574,7 +574,7 @@ local function populateCoordsMenu(propertyId, propertyData)
     end
 
     options[#options+1] = {
-        label = Lang:t('manage_property_menu.manage_coords.save'),
+        label = locale('manage_property_menu.manage_coords.save'),
         icon = 'check',
         args = {
             action = 'save',
@@ -585,7 +585,7 @@ local function populateCoordsMenu(propertyId, propertyData)
 
     lib.registerMenu({
         id = 'propertyCoords_menu',
-        title = Lang:t('manage_property_menu.manage_coords.title'),
+        title = locale('manage_property_menu.manage_coords.title'),
         position = 'top-left',
         options = options,
         onClose = function()
@@ -599,8 +599,8 @@ local function populateCoordsMenu(propertyId, propertyData)
     }, function(_, scrollIndex, args)
         if args.action == "save" then
             local isSure = lib.alertDialog({
-                header = Lang:t('manage_property_menu.manage_coords.confirmation'),
-                content = Lang:t('general.areYouSure'),
+                header = locale('manage_property_menu.manage_coords.confirmation'),
+                content = locale('general.areYouSure'),
                 centered = true,
                 cancel = true
             })
@@ -621,7 +621,7 @@ local function populateCoordsMenu(propertyId, propertyData)
         else
             newData.interiorCoords[args.action] = "reset"
             points[args.action].coords = configCoords[args.action].xyz
-            exports.qbx_core:Notify(Lang:t("manage_property_menu.manage_coords.willBeReset"), 'primary', 7500)
+            exports.qbx_core:Notify(locale("manage_property_menu.manage_coords.willBeReset"), 'primary', 7500)
         end
     end)
 
@@ -652,15 +652,15 @@ local function openManageMenu(propertyId)
     local Role = propertyData.owners[QBX.PlayerData.citizenid]
     if not Role then return end
     local options = {
-        {label = Lang:t('manage_property_menu.name', {name = propertyData.name}), icon = "fas fa-pen", args = { action = "name" }, close = true},
-        {label = Lang:t('manage_property_menu.roles'), icon = "fas fa-users", args = { action = "roles" }, close = true},
-        {label = Lang:t('manage_property_menu.customcoords'), icon = "fas fa-map", args = { action = "customcoords" }, close = true},
+        {label = locale('manage_property_menu.name', propertyData.name), icon = "fas fa-pen", args = { action = "name" }, close = true},
+        {label = locale('manage_property_menu.roles'), icon = "fas fa-users", args = { action = "roles" }, close = true},
+        {label = locale('manage_property_menu.customcoords'), icon = "fas fa-map", args = { action = "customcoords" }, close = true},
     }
 
     if propertyData.property_type ~= 'garage' then
-        options[#options+1] = {label = Lang:t('manage_property_menu.decorate'), icon = "fas fa-bed", args = { action = "decorate" }, close = true}
+        options[#options+1] = {label = locale('manage_property_menu.decorate'), icon = "fas fa-bed", args = { action = "decorate" }, close = true}
     else
-        options[#options+1] = {label = Lang:t('manage_property_menu.vehicles'), icon = "fas fa-car", args = { action = "vehicles" }, close = true}
+        options[#options+1] = {label = locale('manage_property_menu.vehicles'), icon = "fas fa-car", args = { action = "vehicles" }, close = true}
     end
 
     lib.registerMenu({
@@ -680,20 +680,20 @@ local function openManageMenu(propertyId)
             end
         elseif args.action == "roles" then
             if Role ~= "owner" and Role ~= "co_owner" then
-                return exports.qbx_core:Notify(Lang:t('error.not_owner'), 'error', 7500)
+                return exports.qbx_core:Notify(locale('error.not_owner'), 'error', 7500)
             end
             if populateRolesMenu(propertyId, propertyData) then
                 lib.showMenu('propertyRoles_menu')
             end
         elseif args.action == "customcoords" then
             if Role ~= "owner" and Role ~= "co_owner" then
-                return exports.qbx_core:Notify(Lang:t('error.not_owner'), 'error', 7500)
+                return exports.qbx_core:Notify(locale('error.not_owner'), 'error', 7500)
             end
             populateCoordsMenu(propertyId, propertyData)
             lib.showMenu('propertyCoords_menu')
         elseif args.action == "decorate" then
             if Role ~= "owner" then
-                return exports.qbx_core:Notify(Lang:t('error.not_owner'), 'error', 7500)
+                return exports.qbx_core:Notify(locale('error.not_owner'), 'error', 7500)
             end
             -- TODO: decoration menu
         elseif args.action == "vehicles" then
@@ -742,7 +742,7 @@ local function createPropertiesZones()
 
             if self.currentDistance < 1 and not lib.getOpenMenu() and not inSelection then
                 SetTextComponentFormat("STRING")
-                AddTextComponentString(Lang:t('properties_menu.showmenuhelp', {propertyType = Lang:t('properties_menu.'..self.propertyType)}))
+                AddTextComponentString(locale('properties_menu.showmenuhelp', locale('properties_menu.'..self.propertyType)))
                 DisplayHelpTextFromStringLabel(0, false, true, 20000)
                 isInZone = true
                 if IsControlJustPressed(0, 38) then
@@ -1020,8 +1020,8 @@ end)
 --#region Callbacks
 lib.callback.register('qbx_properties:client:promptOffer', function(price, isRent)
     local alert = lib.alertDialog({
-        header = Lang:t('general.promptOfferHeader'),
-        content = Lang:t('general.promptOffer', {action = Lang:t('general.'.. (isRent and 'rent' or 'buy')), amount = price}),
+        header = locale('general.promptOfferHeader'),
+        content = locale('general.promptOffer', Lang:t('general.'.. (isRent and 'rent' or 'buy')), price),
         centered = true,
         cancel = true
     })

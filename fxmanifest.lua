@@ -5,12 +5,10 @@ version '0.0.1'
 repository 'https://github.com/Qbox-project/qbx_properties'
 description 'Hopefully one day a feature rich property system'
 
+ox_lib 'locale'
 shared_scripts {
     '@ox_lib/init.lua',
     '@qbx_core/modules/lib.lua',
-    '@qbx_core/shared/locale.lua',
-    'locales/en.lua',
-    'locales/*.lua',
     'config.lua',
 }
 
@@ -22,6 +20,10 @@ client_scripts {
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/*.lua',
+}
+
+files {
+    'locales/*.json',
 }
 
 lua54 'yes'

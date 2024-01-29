@@ -35,7 +35,7 @@ function CreatePropertyInteriorZones(coords, propertyId, isVisit)
 
         if self.currentDistance < 1 then
             SetTextComponentFormat("STRING")
-            AddTextComponentString(Lang:t('interiorZones.leave'))
+            AddTextComponentString(locale('interiorZones.leave'))
             DisplayHelpTextFromStringLabel(0, 0, 1, 20000)
             if IsControlJustPressed(0, 38) then
                 TriggerServerEvent('qbx_properties:server:leaveProperty', propertyId, cache.vehicle)
@@ -64,7 +64,7 @@ function CreatePropertyInteriorZones(coords, propertyId, isVisit)
 
                 if self.currentDistance < 1 then
                     SetTextComponentFormat("STRING")
-                    AddTextComponentString(Lang:t('interiorZones.wardrobe'))
+                    AddTextComponentString(locale('interiorZones.wardrobe'))
                     DisplayHelpTextFromStringLabel(0, 0, 1, 20000)
                     if IsControlJustPressed(0, 38) then
                         TriggerEvent('qb-clothing:client:openOutfitMenu') -- definitely probably doesn't do shit with illenium
@@ -92,7 +92,7 @@ function CreatePropertyInteriorZones(coords, propertyId, isVisit)
 
                 if self.currentDistance < 1 then
                     SetTextComponentFormat("STRING")
-                    AddTextComponentString(Lang:t('interiorZones.stash'))
+                    AddTextComponentString(locale('interiorZones.stash'))
                     DisplayHelpTextFromStringLabel(0, 0, 1, 20000)
                     if IsControlJustPressed(0, 38) then
                         exports.ox_inventory:openInventory("stash",
@@ -121,7 +121,7 @@ function CreatePropertyInteriorZones(coords, propertyId, isVisit)
 
                 if self.currentDistance < 1 then
                     SetTextComponentFormat("STRING")
-                    AddTextComponentString(Lang:t('interiorZones.logout'))
+                    AddTextComponentString(locale('interiorZones.logout'))
                     DisplayHelpTextFromStringLabel(0, 0, 1, 20000)
                     if IsControlJustPressed(0, 38) then
                         TriggerEvent('qbx_properties:server:Logout')
@@ -150,7 +150,7 @@ function CreatePropertyInteriorZones(coords, propertyId, isVisit)
 
                 if self.currentDistance < 1 then
                     SetTextComponentFormat("STRING")
-                    AddTextComponentString(Lang:t('interiorZones.manage'))
+                    AddTextComponentString(locale('interiorZones.manage'))
                     DisplayHelpTextFromStringLabel(0, false, true, 20000)
                     if IsControlJustPressed(0, 38) then
                         TriggerEvent('qbx_properties:client:openManageMenu', propertyId)
