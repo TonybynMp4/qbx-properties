@@ -1021,7 +1021,7 @@ end)
 lib.callback.register('qbx_properties:client:promptOffer', function(price, isRent)
     local alert = lib.alertDialog({
         header = locale('general.promptOfferHeader'),
-        content = locale('general.promptOffer', Lang:t('general.'.. (isRent and 'rent' or 'buy')), price),
+        content = locale('general.promptOffer', locale('general.'.. (isRent and 'rent' or 'buy')), price),
         centered = true,
         cancel = true
     })
